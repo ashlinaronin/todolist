@@ -9,7 +9,11 @@
 
     $app = new Silex\Application();
 
-    $app->get("/", function() {
+    $app->register(new Silex\Provider\TwigServiceProvider(), array(
+        'twig.path' => __DIR__.'/../views'
+    ));
+
+    $app->get("/", function() use ($app) {
 
         $output = "";
 
@@ -24,7 +28,7 @@
                 <ul>
             ";
             foreach (Task::getAll() as $task) {
-                $output = $output . "<p>" . $task->getDescription() . "</p>";
+                $output = $output . "<li>" . $task->getDescription() . "</li>";
             }
 
             $output .= "</ul>";
@@ -48,7 +52,7 @@
             </form>
         ";
 
-        return $output;
+        return $app['twig']->render('tasks.twig');
     });
 
     $app->post("/tasks", function() {
